@@ -27,6 +27,17 @@ int customer_find_index(customer *c)
     return -1;
 }
 
+int offer_find_index(offer *o)
+{
+    unsigned i;
+    for(i = 0; i < offers_count; i++) {
+        if (o->type == offers[i].type && o->price == offers[i].price) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 int *
 customer_update_or_create_1_svc(customer *argp, struct svc_req *rqstp)
 {
@@ -52,9 +63,11 @@ customer *
 customer_get_1_svc(int *id, struct svc_req *rqstp)
 {
 	static customer  result;
-
-    if (id != NULL && *id >= 0 && *id <= customers_count) {
+    printf("id = %d, count = %d\n", *id, customers_count);
+    if (id != NULL && *id >= 0 && *id < customers_count) {
         result = customers[*id];
+    } else {
+        result.id = -1;
     }
 
 	return &result;
@@ -67,6 +80,8 @@ offer_get_1_svc(int *id, struct svc_req *rqstp)
 
     if (id != NULL && *id >= 0 && *id <= offers_count) {
         result = offers[*id];
+    } else {
+        result.id = -1;
     }
 
 	return &result;
@@ -81,14 +96,16 @@ offer_create_1_svc(offer *of, struct svc_req *rqstp)
     if (of == NULL) return &result;
 
     if (of->id == -1) {
-        if (offers_count + 1 < OFFER_MAX && offer_find_index(argp) == -1) {
+        if (offers_count + 1 < OFFER_MAX && offer_find_index(of) == -1) {
             of->id = offers_count;
             offers[offers_count] = *of;
-            result = offers_count++;
+            //result = offers_count++;
+            result = *of;
         }
-    } else if (argp->id < customers_count) {
-        customers[argp->id] = *argp;
-        result = argp->id;
+    } else if (of->id < customers_count) {
+        offers[of->id] = *of;
+        //result = of->id;
+        result = *of;
     }
 
 	return &result;

@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 #define NB_CUSTOMER 10
-#define BIRTH_DATE_LEN 10
+#define BIRTH_DATE_LEN 11
 #define BUF_LEN 20
 
 enum typeOffer {

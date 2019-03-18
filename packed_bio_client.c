@@ -4,6 +4,8 @@
  * as a guideline for developing your own functions.
  */
 
+#include <assert.h>
+
 #include "packed_bio.h"
 
 
@@ -34,14 +36,79 @@ packed_bio_1(char *host)
 #endif	 /* DEBUG */
 }
 
+void customer_init(customer *c)
+{
+    if (c == NULL) return;
+
+    c->id = -1;
+    c->birth_date[0] = '\0';
+    c->name[0] = '\0';
+    c->surname[0] = '\0';
+    c->address[0] = '\0';
+}
+
+void customer_display(customer *c)
+{
+    printf("Customer :\n");
+    printf("\tId = %d\n", c->id);
+    printf("\tBirth-date = %s\n", c->birth_date);
+    printf("\tName = %s\n", c->name);
+    printf("\tSurname = %s\n", c->surname);
+    printf("\tAddress = %s\n", c->address);
+}
+
+void offer_init(offer *o)
+{
+    o->id = -1;
+    o->price = -1;
+    //o->type = UNKNOWN_OFFER;
+}
+
+int packed_bio_customers(CLIENT *clnt)
+{
+    int *res, i;
+    customer c, *c2;
+
+    // New customers
+    customer_init(&c);
+    sprintf(c.name, "Nonnon");
+    sprintf(c.surname, "Yaya");
+    sprintf(c.birth_date, "23/03/98");
+    sprintf(c.address, "Mimosa");
+    res = customer_update_or_create_1(&c, clnt);
+    assert(*res != -1);
+
+    customer_init(&c);
+    sprintf(c.surname, "Etchebest");
+    sprintf(c.name, "Philippe");
+    sprintf(c.birth_date, "2/12/66");
+    sprintf(c.address, "Aisne");
+    res = customer_update_or_create_1(&c, clnt);
+    assert(*res != -1);
+
+    // Update customer
+    customer_init(&c);
+    c.id = *res;
+    sprintf(c.surname, "Des champs");
+    sprintf(c.name, "Didier");
+    sprintf(c.birth_date, "15/10/68");
+    sprintf(c.address, "Bayonne");
+    res = customer_update_or_create_1(&c, clnt);
+    assert(*res != -1);
+
+    i = 0;
+    while ((c2 = customer_get_1(&i, clnt))->id != -1) {
+        customer_display(c2);
+        i++;
+    }
+
+    return 0;
+}
 
 int main (int argc, char *argv[])
 {
-	char *host;
     CLIENT *clnt;
-    int *res;
-    customer c, *c2;
-
+	char *host;
 	if (argc < 2) {
 		printf("usage: %s server_host\n", argv[0]);
 		exit(1);
@@ -49,15 +116,6 @@ int main (int argc, char *argv[])
 	host = argv[1];
 	packed_bio_1(host);
 	clnt = clnt_create(host, PACKED_BIO, PACKED_BIO_VER, "udp");
-
-    c.id = -1;
-    sprintf(c.birth_date, "23");
-    sprintf(c.name, "Nonnon");
-    sprintf(c.surname, "Yaya");
-    sprintf(c.address, "Mimosa");
-    res = customer_update_or_create_1(&c, clnt);
-    c2 = customer_get_1(res, clnt);
-    printf("prenom = %s\n", c2->name);
-
+    assert(packed_bio_customers(clnt) == 0);
     exit(0);
 }

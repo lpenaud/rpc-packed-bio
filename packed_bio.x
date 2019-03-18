@@ -1,5 +1,5 @@
 const NB_CUSTOMER=10;
-const BIRTH_DATE_LEN=10;
+const BIRTH_DATE_LEN=11;
 const BUF_LEN=20;
 
 enum typeOffer {
