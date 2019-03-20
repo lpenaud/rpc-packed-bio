@@ -18,9 +18,10 @@ extern "C" {
 #define BUF_LEN 20
 
 enum typeOffer {
-	PACKED_VEGETABLES = 0,
-	FISH_RECIPES = 1,
-	PACKED_FRUITS = 2,
+	UNKNOWN_OFFER = 0,
+	PACKED_VEGETABLES = 1,
+	FISH_RECIPES = 2,
+	PACKED_FRUITS = 3,
 };
 typedef enum typeOffer typeOffer;
 
@@ -51,6 +52,7 @@ struct offer {
 	int id;
 	enum typeOffer type;
 	double price;
+	u_short nb;
 };
 typedef struct offer offer;
 
@@ -68,11 +70,11 @@ extern  customer * customer_get_1_svc(int *, struct svc_req *);
 extern  offer * offer_get_1(int *, CLIENT *);
 extern  offer * offer_get_1_svc(int *, struct svc_req *);
 #define OFFER_CREATE 4
-extern  offer * offer_create_1(offer *, CLIENT *);
-extern  offer * offer_create_1_svc(offer *, struct svc_req *);
-#define OFFRE_DELETE 5
-extern  int * offre_delete_1(offer *, CLIENT *);
-extern  int * offre_delete_1_svc(offer *, struct svc_req *);
+extern  int * offer_create_1(offer *, CLIENT *);
+extern  int * offer_create_1_svc(offer *, struct svc_req *);
+#define OFFER_DELETE 5
+extern  int * offer_delete_1(int *, CLIENT *);
+extern  int * offer_delete_1_svc(int *, struct svc_req *);
 extern int packed_bio_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -86,11 +88,11 @@ extern  customer * customer_get_1_svc();
 extern  offer * offer_get_1();
 extern  offer * offer_get_1_svc();
 #define OFFER_CREATE 4
-extern  offer * offer_create_1();
-extern  offer * offer_create_1_svc();
-#define OFFRE_DELETE 5
-extern  int * offre_delete_1();
-extern  int * offre_delete_1_svc();
+extern  int * offer_create_1();
+extern  int * offer_create_1_svc();
+#define OFFER_DELETE 5
+extern  int * offer_delete_1();
+extern  int * offer_delete_1_svc();
 extern int packed_bio_1_freeresult ();
 #endif /* K&R C */
 

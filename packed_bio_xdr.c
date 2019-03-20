@@ -69,5 +69,7 @@ xdr_offer (XDR *xdrs, offer *objp)
 		 return FALSE;
 	 if (!xdr_double (xdrs, &objp->price))
 		 return FALSE;
+	 if (!xdr_u_short (xdrs, &objp->nb))
+		 return FALSE;
 	return TRUE;
 }

@@ -31,7 +31,7 @@ int offer_find_index(offer *o)
 {
     unsigned i;
     for(i = 0; i < offers_count; i++) {
-        if (o->type == offers[i].type && o->price == offers[i].price) {
+        if (o->type == offers[i].type && o->price == offers[i].price && o->nb == o->nb) {
             return i;
         }
     }
@@ -81,7 +81,7 @@ offer_get_1_svc(int *id, struct svc_req *rqstp)
 {
 	static offer  result;
 
-    if (id != NULL && *id >= 0 && *id <= offers_count) {
+    if (id != NULL && *id >= 0 && *id < offers_count) {
         result = offers[*id];
     } else {
         result.id = -1;
@@ -90,38 +90,43 @@ offer_get_1_svc(int *id, struct svc_req *rqstp)
 	return &result;
 }
 
-//TODO: Elle doit renoyer un int
-offer *
-offer_create_1_svc(offer *of, struct svc_req *rqstp)
+int *
+offer_create_1_svc(offer *o, struct svc_req *rqstp)
 {
-	static offer  result;
+	static int  result;
+	int index;
 
-    if (of == NULL) return &result;
+    if (o == NULL) return &result;
 
-    if (of->id == -1) {
-        if (offers_count + 1 < OFFER_MAX && offer_find_index(of) == -1) {
-            of->id = offers_count;
-            offers[offers_count] = *of;
-            //result = offers_count++;
-            result = *of;
+    if (o->id == -1) {
+		index = offer_find_index(o);
+		printf("Index = %d\n", index);
+        if (offers_count + 1 < OFFER_MAX && index == -1) {
+            o->id = offers_count;
+            offers[offers_count] = *o;
+            result = offers_count++;
         }
-    } else if (of->id < customers_count) {
-        offers[of->id] = *of;
-        //result = of->id;
-        result = *of;
+    } else if (o->id < customers_count) {
+        offers[o->id] = *o;
+        result = o->id;
     }
 
 	return &result;
 }
 
 int *
-offre_delete_1_svc(offer *argp, struct svc_req *rqstp)
+offer_delete_1_svc(int *id, struct svc_req *rqstp)
 {
 	static int  result = -1;
+    unsigned i;
 
-	/*
-	 * insert server code here
-	 */
+    if (id == NULL || *id < 0 || *id >= offers_count) return &result;
+
+    for (i = *id; i < offers_count; i++) {
+        offers[i] = offers[i + 1];
+		offers[i].id = i;
+    }
+	result = *id;
 
 	return &result;
 }

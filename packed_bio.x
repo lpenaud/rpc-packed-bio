@@ -3,6 +3,7 @@ const BIRTH_DATE_LEN=11;
 const BUF_LEN=20;
 
 enum typeOffer {
+    UNKNOWN_OFFER,
     PACKED_VEGETABLES,
     FISH_RECIPES,
     PACKED_FRUITS
@@ -32,6 +33,7 @@ struct offer {
     int id;
     enum typeOffer type;
     double price;
+    unsigned short nb;
 };
 
 program PACKED_BIO {
@@ -39,8 +41,7 @@ program PACKED_BIO {
         int CUSTOMER_UPDATE_OR_CREATE(customer) = 1;
         customer CUSTOMER_GET(int) = 2;
         offer OFFER_GET(int) = 3;
-        offer OFFER_CREATE(offer) = 4;
-        int OFFRE_DELETE(offer) = 5;
+        int OFFER_CREATE(offer) = 4;
+        int OFFER_DELETE(int) = 5;
 	} = 1 ;
 } = 0x23456789;
-

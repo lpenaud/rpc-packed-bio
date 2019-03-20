@@ -24,7 +24,7 @@ packed_bio_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		int customer_get_1_arg;
 		int offer_get_1_arg;
 		offer offer_create_1_arg;
-		offer offre_delete_1_arg;
+		int offer_delete_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -55,14 +55,14 @@ packed_bio_1(struct svc_req *rqstp, register SVCXPRT *transp)
 
 	case OFFER_CREATE:
 		_xdr_argument = (xdrproc_t) xdr_offer;
-		_xdr_result = (xdrproc_t) xdr_offer;
+		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) offer_create_1_svc;
 		break;
 
-	case OFFRE_DELETE:
-		_xdr_argument = (xdrproc_t) xdr_offer;
+	case OFFER_DELETE:
+		_xdr_argument = (xdrproc_t) xdr_int;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) offre_delete_1_svc;
+		local = (char *(*)(char *, struct svc_req *)) offer_delete_1_svc;
 		break;
 
 	default:

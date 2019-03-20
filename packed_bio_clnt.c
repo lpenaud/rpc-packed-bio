@@ -54,15 +54,15 @@ offer_get_1(int *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-offer *
+int *
 offer_create_1(offer *argp, CLIENT *clnt)
 {
-	static offer clnt_res;
+	static int clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	if (clnt_call (clnt, OFFER_CREATE,
 		(xdrproc_t) xdr_offer, (caddr_t) argp,
-		(xdrproc_t) xdr_offer, (caddr_t) &clnt_res,
+		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}
@@ -70,13 +70,13 @@ offer_create_1(offer *argp, CLIENT *clnt)
 }
 
 int *
-offre_delete_1(offer *argp, CLIENT *clnt)
+offer_delete_1(int *argp, CLIENT *clnt)
 {
 	static int clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, OFFRE_DELETE,
-		(xdrproc_t) xdr_offer, (caddr_t) argp,
+	if (clnt_call (clnt, OFFER_DELETE,
+		(xdrproc_t) xdr_int, (caddr_t) argp,
 		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);

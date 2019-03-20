@@ -49,25 +49,49 @@ void customer_init(customer *c)
 
 void customer_display(customer *c)
 {
-    printf("Customer :\n");
+    printf("Client :\n");
     printf("\tId = %d\n", c->id);
-    printf("\tBirth-date = %s\n", c->birth_date);
-    printf("\tName = %s\n", c->name);
-    printf("\tSurname = %s\n", c->surname);
-    printf("\tAddress = %s\n", c->address);
+    printf("\tDate de naissance = %s\n", c->birth_date);
+    printf("\tPrénom = %s\n", c->name);
+    printf("\tNom = %s\n", c->surname);
+    printf("\tAdresse = %s\n", c->address);
 }
 
 void offer_init(offer *o)
 {
     o->id = -1;
     o->price = -1;
-    //o->type = UNKNOWN_OFFER;
+    o->type = UNKNOWN_OFFER;
+	o->nb = 0;
+}
+
+void offer_display(offer *o) {
+	printf("Offre :\n");
+	printf("\tId = %d\n", o->id);
+	printf("\tPrix = %.2f\n", o->price);
+	switch (o->type) {
+		case UNKNOWN_OFFER:
+			printf("\tType = Offre inconnue\n");
+			break;
+		case PACKED_VEGETABLES:
+			printf("\tType = Panier de légume\n");
+			break;
+		case FISH_RECIPES:
+			printf("\tType = Assortiments de poissons\n");
+			printf("\tNombre de personne : %hu\n", o->nb);
+			break;
+		case PACKED_FRUITS:
+			printf("\tType = Panier de fruit\n");
+			printf("\tNombre de fruits : %hu\n", o->nb);
+			break;
+	}
 }
 
 int packed_bio_customers(CLIENT *clnt)
 {
     int *res, i;
     customer c, *c2;
+	offer o, *o2;
 
     // New customers
     customer_init(&c);
@@ -81,7 +105,7 @@ int packed_bio_customers(CLIENT *clnt)
     customer_init(&c);
     sprintf(c.surname, "Etchebest");
     sprintf(c.name, "Philippe");
-    sprintf(c.birth_date, "2/12/66");
+    sprintf(c.birth_date, "02/12/66");
     sprintf(c.address, "Aisne");
     res = customer_update_or_create_1(&c, clnt);
     assert(*res != -1);
@@ -102,12 +126,44 @@ int packed_bio_customers(CLIENT *clnt)
         i++;
     }
 
+	// Create offers
+	offer_init(&o);
+	o.price = 16.;
+	o.type = PACKED_VEGETABLES;
+	res = offer_create_1(&o, clnt);
+	o2 = offer_get_1(res, clnt);
+	offer_display(o2);
+
+	offer_init(&o);
+	o.price = 19.99;
+	o.type = PACKED_FRUITS;
+	o.nb = 3;
+	res = offer_create_1(&o, clnt);
+	o2 = offer_get_1(res, clnt);
+	offer_display(o2);
+
+	offer_init(&o);
+	o.price = 32.5;
+	o.type = FISH_RECIPES;
+	o.nb = 6;
+	res = offer_create_1(&o, clnt);
+	o2 = offer_get_1(res, clnt);
+	offer_display(o2);
+
+	// Delete offer
+	i = 0;
+	res = offer_delete_1(&i, clnt);
+	assert(*res == i);
+	printf("Delete id : %d\n", *res);
+	o2 = offer_get_1(&i, clnt);
+	assert(o2->price == 19.99 && o2->type == PACKED_FRUITS);
+	offer_display(o2);
+
     return 0;
 }
 
 int main (int argc, char *argv[])
 {
-    CLIENT *clnt;
 	char *host;
 	if (argc < 2) {
 		printf("usage: %s server_host\n", argv[0]);
@@ -115,7 +171,5 @@ int main (int argc, char *argv[])
 	}
 	host = argv[1];
 	packed_bio_1(host);
-	clnt = clnt_create(host, PACKED_BIO, PACKED_BIO_VER, "udp");
-    assert(packed_bio_customers(clnt) == 0);
-    exit(0);
+    exit(packed_bio_customers(clnt_create(host, PACKED_BIO, PACKED_BIO_VER, "udp")));
 }
