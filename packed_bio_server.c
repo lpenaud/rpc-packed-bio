@@ -90,11 +90,10 @@ offer_get_1_svc(int *id, struct svc_req *rqstp)
 	return &result;
 }
 
-//TODO: Elle doit renoyer un int
-offer *
+int *
 offer_create_1_svc(offer *of, struct svc_req *rqstp)
 {
-	static offer  result;
+	static int  result = -1;
 
     if (of == NULL) return &result;
 
