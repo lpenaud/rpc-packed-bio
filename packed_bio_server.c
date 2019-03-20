@@ -19,7 +19,7 @@ int customer_find_index(customer *c)
 {
     unsigned i;
     for(i = 0; i < customers_count; i++) {
-        if (strcmp(customers[i].name, c->name) == 0 
+        if (strcmp(customers[i].name, c->name) == 0
             && strcmp(customers[i].surname, c->surname) == 0
             && strcmp(customers[i].address, c->address) == 0)
                 return i;
@@ -52,6 +52,9 @@ customer_update_or_create_1_svc(customer *argp, struct svc_req *rqstp)
             result = customers_count++;
         }
     } else if (argp->id < customers_count) {
+        if (customer_find_index(argp) != -1) {
+            return &result;
+        }
         customers[argp->id] = *argp;
         result = argp->id;
     }
@@ -63,7 +66,7 @@ customer *
 customer_get_1_svc(int *id, struct svc_req *rqstp)
 {
 	static customer  result;
-    printf("id = %d, count = %d\n", *id, customers_count);
+
     if (id != NULL && *id >= 0 && *id < customers_count) {
         result = customers[*id];
     } else {
