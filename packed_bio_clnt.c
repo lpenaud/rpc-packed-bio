@@ -39,6 +39,21 @@ customer_get_1(int *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
+anyCustomers *
+customer_get_all_1(void *argp, CLIENT *clnt)
+{
+	static anyCustomers clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, CUSTOMER_GET_ALL,
+		(xdrproc_t) xdr_void, (caddr_t) argp,
+		(xdrproc_t) xdr_anyCustomers, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
 offer *
 offer_get_1(int *argp, CLIENT *clnt)
 {
@@ -82,4 +97,34 @@ offer_delete_1(int *argp, CLIENT *clnt)
 		return (NULL);
 	}
 	return (&clnt_res);
+}
+
+anyOffers *
+offer_get_all_1(void *argp, CLIENT *clnt)
+{
+	static anyOffers clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, OFFER_GET_ALL,
+		(xdrproc_t) xdr_void, (caddr_t) argp,
+		(xdrproc_t) xdr_anyOffers, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+void *
+init_1(void *argp, CLIENT *clnt)
+{
+	static char clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, INIT,
+		(xdrproc_t) xdr_void, (caddr_t) argp,
+		(xdrproc_t) xdr_void, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return ((void *)&clnt_res);
 }

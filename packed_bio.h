@@ -56,6 +56,18 @@ struct offer {
 };
 typedef struct offer offer;
 
+struct anyCustomers {
+	struct customer customers[10];
+	u_int len;
+};
+typedef struct anyCustomers anyCustomers;
+
+struct anyOffers {
+	struct offer offers[10];
+	u_int len;
+};
+typedef struct anyOffers anyOffers;
+
 #define PACKED_BIO 0x23456789
 #define PACKED_BIO_VER 1
 
@@ -66,15 +78,24 @@ extern  int * customer_update_or_create_1_svc(customer *, struct svc_req *);
 #define CUSTOMER_GET 2
 extern  customer * customer_get_1(int *, CLIENT *);
 extern  customer * customer_get_1_svc(int *, struct svc_req *);
-#define OFFER_GET 3
+#define CUSTOMER_GET_ALL 3
+extern  anyCustomers * customer_get_all_1(void *, CLIENT *);
+extern  anyCustomers * customer_get_all_1_svc(void *, struct svc_req *);
+#define OFFER_GET 4
 extern  offer * offer_get_1(int *, CLIENT *);
 extern  offer * offer_get_1_svc(int *, struct svc_req *);
-#define OFFER_CREATE 4
+#define OFFER_CREATE 5
 extern  int * offer_create_1(offer *, CLIENT *);
 extern  int * offer_create_1_svc(offer *, struct svc_req *);
-#define OFFER_DELETE 5
+#define OFFER_DELETE 6
 extern  int * offer_delete_1(int *, CLIENT *);
 extern  int * offer_delete_1_svc(int *, struct svc_req *);
+#define OFFER_GET_ALL 7
+extern  anyOffers * offer_get_all_1(void *, CLIENT *);
+extern  anyOffers * offer_get_all_1_svc(void *, struct svc_req *);
+#define INIT 8
+extern  void * init_1(void *, CLIENT *);
+extern  void * init_1_svc(void *, struct svc_req *);
 extern int packed_bio_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -84,15 +105,24 @@ extern  int * customer_update_or_create_1_svc();
 #define CUSTOMER_GET 2
 extern  customer * customer_get_1();
 extern  customer * customer_get_1_svc();
-#define OFFER_GET 3
+#define CUSTOMER_GET_ALL 3
+extern  anyCustomers * customer_get_all_1();
+extern  anyCustomers * customer_get_all_1_svc();
+#define OFFER_GET 4
 extern  offer * offer_get_1();
 extern  offer * offer_get_1_svc();
-#define OFFER_CREATE 4
+#define OFFER_CREATE 5
 extern  int * offer_create_1();
 extern  int * offer_create_1_svc();
-#define OFFER_DELETE 5
+#define OFFER_DELETE 6
 extern  int * offer_delete_1();
 extern  int * offer_delete_1_svc();
+#define OFFER_GET_ALL 7
+extern  anyOffers * offer_get_all_1();
+extern  anyOffers * offer_get_all_1_svc();
+#define INIT 8
+extern  void * init_1();
+extern  void * init_1_svc();
 extern int packed_bio_1_freeresult ();
 #endif /* K&R C */
 
@@ -104,6 +134,8 @@ extern  bool_t xdr_packedLunch (XDR *, packedLunch*);
 extern  bool_t xdr_fishRecipes (XDR *, fishRecipes*);
 extern  bool_t xdr_customer (XDR *, customer*);
 extern  bool_t xdr_offer (XDR *, offer*);
+extern  bool_t xdr_anyCustomers (XDR *, anyCustomers*);
+extern  bool_t xdr_anyOffers (XDR *, anyOffers*);
 
 #else /* K&R C */
 extern bool_t xdr_typeOffer ();
@@ -111,6 +143,8 @@ extern bool_t xdr_packedLunch ();
 extern bool_t xdr_fishRecipes ();
 extern bool_t xdr_customer ();
 extern bool_t xdr_offer ();
+extern bool_t xdr_anyCustomers ();
+extern bool_t xdr_anyOffers ();
 
 #endif /* K&R C */
 

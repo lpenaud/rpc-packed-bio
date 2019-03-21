@@ -36,12 +36,25 @@ struct offer {
     unsigned short nb;
 };
 
+struct anyCustomers {
+    struct customer customers[10];
+    unsigned len;
+};
+
+struct anyOffers {
+    struct offer offers[10];
+    unsigned len;
+};
+
 program PACKED_BIO {
 	version PACKED_BIO_VER {
         int CUSTOMER_UPDATE_OR_CREATE(customer) = 1;
         customer CUSTOMER_GET(int) = 2;
-        offer OFFER_GET(int) = 3;
-        int OFFER_CREATE(offer) = 4;
-        int OFFER_DELETE(int) = 5;
+        anyCustomers CUSTOMER_GET_ALL() = 3;
+        offer OFFER_GET(int) = 4;
+        int OFFER_CREATE(offer) = 5;
+        int OFFER_DELETE(int) = 6;
+        anyOffers OFFER_GET_ALL() = 7;
+        void INIT(void) = 8;
 	} = 1 ;
 } = 0x23456789;

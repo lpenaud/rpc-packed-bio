@@ -7,7 +7,7 @@
 #include "packed_bio.h"
 
 #define CUSTOMER_MAX 10
-#define OFFER_MAX 20
+#define OFFER_MAX 10
 
 unsigned customers_count = 0;
 customer customers[CUSTOMER_MAX];
@@ -75,17 +75,35 @@ customer_get_1_svc(int *id, struct svc_req *rqstp)
 
 	return &result;
 }
+anyCustomers *
+customer_get_all_1_svc(void *argp, struct svc_req *rqstp)
+{
+    static anyCustomers result;
+    unsigned i;
+
+    for(i = 0; i < customers_count; i++) {
+        result.customers[i] = customers[i];
+    }
+    result.len = customers_count;
+
+    return &result;
+}
 
 offer *
 offer_get_1_svc(int *id, struct svc_req *rqstp)
 {
 	static offer  result;
+    unsigned i;
 
-    if (id != NULL && *id >= 0 && *id < offers_count) {
-        result = offers[*id];
-    } else {
-        result.id = -1;
+    if (id != NULL) {
+        for(i = 0; i < OFFER_MAX; i++) {
+            if (offers[i].id == *id) {
+                result = offers[*id];
+                return &result;
+            }
+        }
     }
+    result.id = -1;
 
 	return &result;
 }
@@ -93,22 +111,28 @@ offer_get_1_svc(int *id, struct svc_req *rqstp)
 int *
 offer_create_1_svc(offer *o, struct svc_req *rqstp)
 {
-	static int  result;
-	int index;
+	static int  result = -1;
+    unsigned i;
 
-    if (o == NULL) return &result;
+    if (o == NULL || offer_find_index(o) != -1) 
+        return &result;
 
-    if (o->id == -1) {
-		index = offer_find_index(o);
-		printf("Index = %d\n", index);
-        if (offers_count + 1 < OFFER_MAX && index == -1) {
-            o->id = offers_count;
-            offers[offers_count] = *o;
-            result = offers_count++;
+    if (o->id < 0) {
+        for(i = 0; i < OFFER_MAX; i++) {
+            if (offers[i].id == -1) {
+                o->id = offers_count;
+                offers[i] = *o;
+                result = offers_count++;
+                return &result;
+            }
         }
-    } else if (o->id < customers_count) {
-        offers[o->id] = *o;
-        result = o->id;
+    } else {
+        for(i = 0; i < OFFER_MAX; i++) {
+            if (offers[i].id == o->id) {
+                offers[i] = *o;
+                result = o->id;
+            }
+        }
     }
 
 	return &result;
@@ -120,13 +144,45 @@ offer_delete_1_svc(int *id, struct svc_req *rqstp)
 	static int  result = -1;
     unsigned i;
 
-    if (id == NULL || *id < 0 || *id >= offers_count) return &result;
+    if (id == NULL || *id < 0) 
+        return &result;
 
-    for (i = *id; i < offers_count; i++) {
-        offers[i] = offers[i + 1];
-		offers[i].id = i;
+    for(i = 0; i < OFFER_MAX; i++) {
+        if (offers[i].id == *id) {
+            offers[i].id = -1;
+	        result = *id;
+            return &result;
+        }
     }
-	result = *id;
 
 	return &result;
+}
+
+anyOffers *
+offer_get_all_1_svc(void *argp, struct svc_req *rqstp)
+{
+    static anyOffers result;
+    unsigned i;
+
+    result.len = 0;
+    for(i = 0; i < OFFER_MAX; i++) {
+        if (offers[i].id != -1) {
+            result.offers[result.len++] = offers[i];
+        }
+    }
+
+    return &result;
+}
+
+void *
+init_1_svc(void *argp, struct svc_req *rqstp)
+{
+    static char result;
+    unsigned i;
+
+    for(i = 0; i < OFFER_MAX; i++) {
+        offers[i].id = -1;
+    }
+
+    return (void *) &result;
 }

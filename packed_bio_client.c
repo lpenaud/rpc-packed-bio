@@ -91,7 +91,10 @@ int packed_bio_customers(CLIENT *clnt)
 {
     int *res, i;
     customer c, *c2;
+    anyCustomers *cs;
+
 	offer o, *o2;
+    anyOffers *os;
 
     // New customers
     customer_init(&c);
@@ -120,44 +123,50 @@ int packed_bio_customers(CLIENT *clnt)
     res = customer_update_or_create_1(&c, clnt);
     assert(*res != -1);
 
-    i = 0;
-    while ((c2 = customer_get_1(&i, clnt))->id != -1) {
-        customer_display(c2);
-        i++;
+    cs = customer_get_all_1(NULL, clnt);
+    for(i = 0; i < cs->len; i++) {
+        customer_display(cs->customers + i);
     }
 
+    init_1(NULL, clnt);
 	// Create offers
+    printf("Création d'un panier de légume\n");
 	offer_init(&o);
 	o.price = 16.;
 	o.type = PACKED_VEGETABLES;
 	res = offer_create_1(&o, clnt);
 	o2 = offer_get_1(res, clnt);
-	offer_display(o2);
+    offer_display(o2);
 
+    printf("Création d'un panier de fruit\n");
 	offer_init(&o);
 	o.price = 19.99;
 	o.type = PACKED_FRUITS;
 	o.nb = 3;
 	res = offer_create_1(&o, clnt);
 	o2 = offer_get_1(res, clnt);
-	offer_display(o2);
+    offer_display(o2);
 
+    printf("Création d'un assortiment de poissons\n");
 	offer_init(&o);
 	o.price = 32.5;
 	o.type = FISH_RECIPES;
 	o.nb = 6;
 	res = offer_create_1(&o, clnt);
 	o2 = offer_get_1(res, clnt);
-	offer_display(o2);
+    offer_display(o2);
 
 	// Delete offer
 	i = 0;
+    printf("On supprime l'offre %d\n", i);
 	res = offer_delete_1(&i, clnt);
-	assert(*res == i);
-	printf("Delete id : %d\n", *res);
-	o2 = offer_get_1(&i, clnt);
-	assert(o2->price == 19.99 && o2->type == PACKED_FRUITS);
-	offer_display(o2);
+    
+    printf("Maintenant il doit avoir une offre en moins\n");
+    os = offer_get_all_1(NULL, clnt);
+    for(i = 0; i < os->len; i++) {
+        offer_display(os->offers + i);
+    }
+
 
     return 0;
 }

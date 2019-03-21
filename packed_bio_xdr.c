@@ -73,3 +73,31 @@ xdr_offer (XDR *xdrs, offer *objp)
 		 return FALSE;
 	return TRUE;
 }
+
+bool_t
+xdr_anyCustomers (XDR *xdrs, anyCustomers *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->customers, 10,
+		sizeof (customer), (xdrproc_t) xdr_customer))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->len))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_anyOffers (XDR *xdrs, anyOffers *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->offers, 10,
+		sizeof (offer), (xdrproc_t) xdr_offer))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->len))
+		 return FALSE;
+	return TRUE;
+}

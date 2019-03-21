@@ -47,6 +47,12 @@ packed_bio_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) customer_get_1_svc;
 		break;
 
+	case CUSTOMER_GET_ALL:
+		_xdr_argument = (xdrproc_t) xdr_void;
+		_xdr_result = (xdrproc_t) xdr_anyCustomers;
+		local = (char *(*)(char *, struct svc_req *)) customer_get_all_1_svc;
+		break;
+
 	case OFFER_GET:
 		_xdr_argument = (xdrproc_t) xdr_int;
 		_xdr_result = (xdrproc_t) xdr_offer;
@@ -63,6 +69,18 @@ packed_bio_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_int;
 		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) offer_delete_1_svc;
+		break;
+
+	case OFFER_GET_ALL:
+		_xdr_argument = (xdrproc_t) xdr_void;
+		_xdr_result = (xdrproc_t) xdr_anyOffers;
+		local = (char *(*)(char *, struct svc_req *)) offer_get_all_1_svc;
+		break;
+
+	case INIT:
+		_xdr_argument = (xdrproc_t) xdr_void;
+		_xdr_result = (xdrproc_t) xdr_void;
+		local = (char *(*)(char *, struct svc_req *)) init_1_svc;
 		break;
 
 	default:
