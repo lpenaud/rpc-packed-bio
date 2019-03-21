@@ -87,6 +87,36 @@ void offer_display(offer *o) {
 	}
 }
 
+void supplier_init(supplier *s)
+{
+	s->address[0] = '\0';
+	s->id = -1;
+	s->surname[0] = '\0';
+	s->type = UNKOWN_SUPPLIER;
+}
+
+void supplier_display(supplier *s)
+{
+	printf("Fournisseur\n");
+	printf("\tId = %d\n", s->id);
+	printf("\tNom = %s\n", s->surname);
+	printf("\tAdresse = %s\n", s->address);
+	switch (s->type) {
+		case UNKOWN_SUPPLIER:
+			printf("\tType = Inconnue\n");
+			break;
+		case VEGETABLES_SUPPLIER:
+			printf("\tType = Légume\n");
+			break;
+		case FISH_SUPPLIER:
+			printf("\tType = Poissons\n");
+			break;
+		case FRUITS_SUPPLIER:
+			printf("\tType = Fruits\n");
+			break;
+	}
+}
+
 int packed_bio_customers(CLIENT *clnt)
 {
     int *res, i;
@@ -95,6 +125,10 @@ int packed_bio_customers(CLIENT *clnt)
 
 	offer o, *o2;
     anyOffers *os;
+
+	supplier s, *s2;
+	anySuppliers *ss;
+	supplierType st;
 
     // New customers
     customer_init(&c);
@@ -160,13 +194,53 @@ int packed_bio_customers(CLIENT *clnt)
 	i = 0;
     printf("On supprime l'offre %d\n", i);
 	res = offer_delete_1(&i, clnt);
-    
+
     printf("Maintenant il doit avoir une offre en moins\n");
     os = offer_get_all_1(NULL, clnt);
     for(i = 0; i < os->len; i++) {
         offer_display(os->offers + i);
     }
 
+	printf("Création d'un fournisseur de fruit\n");
+	supplier_init(&s);
+	sprintf(s.address, "Pont-Croix");
+	sprintf(s.surname, "Pierre");
+	s.type = FRUITS_SUPPLIER;
+	res = supplier_create_1(&s, clnt);
+	s2 = supplier_get_1(res, clnt);
+	supplier_display(s2);
+
+	printf("Création d'un fournisseur de légume\n");
+	supplier_init(&s);
+	sprintf(s.address, "Audierne");
+	sprintf(s.surname, "Jacques");
+	s.type = VEGETABLES_SUPPLIER;
+	res = supplier_create_1(&s, clnt);
+	s2 = supplier_get_1(res, clnt);
+	supplier_display(s2);
+
+	printf("Création d'un deuxième fournisseur de fruit\n");
+	supplier_init(&s);
+	sprintf(s.address, "Douarnenez");
+	sprintf(s.surname, "Paul");
+	s.type = FRUITS_SUPPLIER;
+	res = supplier_create_1(&s, clnt);
+	s2 = supplier_get_1(res, clnt);
+	supplier_display(s2);
+
+	printf("On affiche tout les fournisseurs de fruit (2)\n");
+	st = FRUITS_SUPPLIER;
+	ss = supplier_get_all_1(&st, clnt);
+	for (i = 0; i < ss->len; i++) {
+		supplier_display(ss->suppliers + i);
+	}
+
+	printf("On affiche tout les fournisseurs (3)\n");
+	st = UNKNOWN_OFFER;
+	ss = supplier_get_all_1(&st, clnt);
+	for (i = 0; i < ss->len; i++) {
+		supplier_display(ss->suppliers + i);
+	}
 
     return 0;
 }

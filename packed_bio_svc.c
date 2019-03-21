@@ -25,6 +25,10 @@ packed_bio_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		int offer_get_1_arg;
 		offer offer_create_1_arg;
 		int offer_delete_1_arg;
+		supplier supplier_create_1_arg;
+		int supplier_get_1_arg;
+		int supplier_delete_1_arg;
+		supplierType supplier_get_all_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -81,6 +85,30 @@ packed_bio_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_void;
 		_xdr_result = (xdrproc_t) xdr_void;
 		local = (char *(*)(char *, struct svc_req *)) init_1_svc;
+		break;
+
+	case SUPPLIER_CREATE:
+		_xdr_argument = (xdrproc_t) xdr_supplier;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (char *(*)(char *, struct svc_req *)) supplier_create_1_svc;
+		break;
+
+	case SUPPLIER_GET:
+		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_result = (xdrproc_t) xdr_supplier;
+		local = (char *(*)(char *, struct svc_req *)) supplier_get_1_svc;
+		break;
+
+	case SUPPLIER_DELETE:
+		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (char *(*)(char *, struct svc_req *)) supplier_delete_1_svc;
+		break;
+
+	case SUPPLIER_GET_ALL:
+		_xdr_argument = (xdrproc_t) xdr_supplierType;
+		_xdr_result = (xdrproc_t) xdr_anySuppliers;
+		local = (char *(*)(char *, struct svc_req *)) supplier_get_all_1_svc;
 		break;
 
 	default:

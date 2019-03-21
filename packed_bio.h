@@ -25,19 +25,13 @@ enum typeOffer {
 };
 typedef enum typeOffer typeOffer;
 
-enum packedLunch {
-	PL_PETIT = 16,
-	PL_MOYEN = 24,
-	PL_GRAND = 30,
+enum supplierType {
+	UNKOWN_SUPPLIER = 0,
+	VEGETABLES_SUPPLIER = 1,
+	FISH_SUPPLIER = 2,
+	FRUITS_SUPPLIER = 3,
 };
-typedef enum packedLunch packedLunch;
-
-enum fishRecipes {
-	FR_PETIT = 2,
-	FR_MOYEN = 4,
-	FR_GRAND = 6,
-};
-typedef enum fishRecipes fishRecipes;
+typedef enum supplierType supplierType;
 
 struct customer {
 	int id;
@@ -68,6 +62,20 @@ struct anyOffers {
 };
 typedef struct anyOffers anyOffers;
 
+struct supplier {
+	int id;
+	char surname[BUF_LEN];
+	char address[BUF_LEN];
+	enum supplierType type;
+};
+typedef struct supplier supplier;
+
+struct anySuppliers {
+	struct supplier suppliers[10];
+	u_int len;
+};
+typedef struct anySuppliers anySuppliers;
+
 #define PACKED_BIO 0x23456789
 #define PACKED_BIO_VER 1
 
@@ -96,6 +104,18 @@ extern  anyOffers * offer_get_all_1_svc(void *, struct svc_req *);
 #define INIT 8
 extern  void * init_1(void *, CLIENT *);
 extern  void * init_1_svc(void *, struct svc_req *);
+#define SUPPLIER_CREATE 9
+extern  int * supplier_create_1(supplier *, CLIENT *);
+extern  int * supplier_create_1_svc(supplier *, struct svc_req *);
+#define SUPPLIER_GET 10
+extern  supplier * supplier_get_1(int *, CLIENT *);
+extern  supplier * supplier_get_1_svc(int *, struct svc_req *);
+#define SUPPLIER_DELETE 11
+extern  int * supplier_delete_1(int *, CLIENT *);
+extern  int * supplier_delete_1_svc(int *, struct svc_req *);
+#define SUPPLIER_GET_ALL 12
+extern  anySuppliers * supplier_get_all_1(supplierType *, CLIENT *);
+extern  anySuppliers * supplier_get_all_1_svc(supplierType *, struct svc_req *);
 extern int packed_bio_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -123,6 +143,18 @@ extern  anyOffers * offer_get_all_1_svc();
 #define INIT 8
 extern  void * init_1();
 extern  void * init_1_svc();
+#define SUPPLIER_CREATE 9
+extern  int * supplier_create_1();
+extern  int * supplier_create_1_svc();
+#define SUPPLIER_GET 10
+extern  supplier * supplier_get_1();
+extern  supplier * supplier_get_1_svc();
+#define SUPPLIER_DELETE 11
+extern  int * supplier_delete_1();
+extern  int * supplier_delete_1_svc();
+#define SUPPLIER_GET_ALL 12
+extern  anySuppliers * supplier_get_all_1();
+extern  anySuppliers * supplier_get_all_1_svc();
 extern int packed_bio_1_freeresult ();
 #endif /* K&R C */
 
@@ -130,21 +162,23 @@ extern int packed_bio_1_freeresult ();
 
 #if defined(__STDC__) || defined(__cplusplus)
 extern  bool_t xdr_typeOffer (XDR *, typeOffer*);
-extern  bool_t xdr_packedLunch (XDR *, packedLunch*);
-extern  bool_t xdr_fishRecipes (XDR *, fishRecipes*);
+extern  bool_t xdr_supplierType (XDR *, supplierType*);
 extern  bool_t xdr_customer (XDR *, customer*);
 extern  bool_t xdr_offer (XDR *, offer*);
 extern  bool_t xdr_anyCustomers (XDR *, anyCustomers*);
 extern  bool_t xdr_anyOffers (XDR *, anyOffers*);
+extern  bool_t xdr_supplier (XDR *, supplier*);
+extern  bool_t xdr_anySuppliers (XDR *, anySuppliers*);
 
 #else /* K&R C */
 extern bool_t xdr_typeOffer ();
-extern bool_t xdr_packedLunch ();
-extern bool_t xdr_fishRecipes ();
+extern bool_t xdr_supplierType ();
 extern bool_t xdr_customer ();
 extern bool_t xdr_offer ();
 extern bool_t xdr_anyCustomers ();
 extern bool_t xdr_anyOffers ();
+extern bool_t xdr_supplier ();
+extern bool_t xdr_anySuppliers ();
 
 #endif /* K&R C */
 

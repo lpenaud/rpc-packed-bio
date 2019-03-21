@@ -128,3 +128,63 @@ init_1(void *argp, CLIENT *clnt)
 	}
 	return ((void *)&clnt_res);
 }
+
+int *
+supplier_create_1(supplier *argp, CLIENT *clnt)
+{
+	static int clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, SUPPLIER_CREATE,
+		(xdrproc_t) xdr_supplier, (caddr_t) argp,
+		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+supplier *
+supplier_get_1(int *argp, CLIENT *clnt)
+{
+	static supplier clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, SUPPLIER_GET,
+		(xdrproc_t) xdr_int, (caddr_t) argp,
+		(xdrproc_t) xdr_supplier, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+int *
+supplier_delete_1(int *argp, CLIENT *clnt)
+{
+	static int clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, SUPPLIER_DELETE,
+		(xdrproc_t) xdr_int, (caddr_t) argp,
+		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+anySuppliers *
+supplier_get_all_1(supplierType *argp, CLIENT *clnt)
+{
+	static anySuppliers clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, SUPPLIER_GET_ALL,
+		(xdrproc_t) xdr_supplierType, (caddr_t) argp,
+		(xdrproc_t) xdr_anySuppliers, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
