@@ -16,17 +16,7 @@ xdr_typeOffer (XDR *xdrs, typeOffer *objp)
 }
 
 bool_t
-xdr_packedLunch (XDR *xdrs, packedLunch *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_enum (xdrs, (enum_t *) objp))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_fishRecipes (XDR *xdrs, fishRecipes *objp)
+xdr_supplierType (XDR *xdrs, supplierType *objp)
 {
 	register int32_t *buf;
 
@@ -68,6 +58,69 @@ xdr_offer (XDR *xdrs, offer *objp)
 	 if (!xdr_typeOffer (xdrs, &objp->type))
 		 return FALSE;
 	 if (!xdr_double (xdrs, &objp->price))
+		 return FALSE;
+	 if (!xdr_u_short (xdrs, &objp->nb))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_anyCustomers (XDR *xdrs, anyCustomers *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->customers, 10,
+		sizeof (customer), (xdrproc_t) xdr_customer))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->len))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_anyOffers (XDR *xdrs, anyOffers *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->offers, 10,
+		sizeof (offer), (xdrproc_t) xdr_offer))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->len))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_supplier (XDR *xdrs, supplier *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_int (xdrs, &objp->id))
+		 return FALSE;
+	 if (!xdr_vector (xdrs, (char *)objp->surname, BUF_LEN,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	 if (!xdr_vector (xdrs, (char *)objp->address, BUF_LEN,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	 if (!xdr_supplierType (xdrs, &objp->type))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_anySuppliers (XDR *xdrs, anySuppliers *objp)
+{
+	register int32_t *buf;
+
+	int i;
+	 if (!xdr_vector (xdrs, (char *)objp->suppliers, 10,
+		sizeof (supplier), (xdrproc_t) xdr_supplier))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->len))
 		 return FALSE;
 	return TRUE;
 }

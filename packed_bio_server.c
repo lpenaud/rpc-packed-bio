@@ -7,13 +7,17 @@
 #include "packed_bio.h"
 
 #define CUSTOMER_MAX 10
-#define OFFER_MAX 20
+#define OFFER_MAX 10
+#define SUPPLIER_MAX 10
 
 unsigned customers_count = 0;
 customer customers[CUSTOMER_MAX];
 
 offer offers[OFFER_MAX];
 unsigned offers_count = 0;
+
+supplier suppliers[SUPPLIER_MAX];
+unsigned supplier_count = 0;
 
 int customer_find_index(customer *c)
 {
@@ -30,8 +34,25 @@ int customer_find_index(customer *c)
 int offer_find_index(offer *o)
 {
     unsigned i;
-    for(i = 0; i < offers_count; i++) {
-        if (o->type == offers[i].type && o->price == offers[i].price) {
+    for(i = 0; i < OFFER_MAX; i++) {
+        if (offers[i].id != -1
+            && o->type == offers[i].type
+            && o->price == offers[i].price
+            && o->nb == o->nb) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int supplier_find_index(supplier *s)
+{
+    unsigned i;
+    for (i = 0; i < SUPPLIER_MAX; i++) {
+        if (offers[i].id != -1
+            && strcmp(suppliers[i].address, s->address) == 0
+            && strcmp(suppliers[i].surname, s->surname) == 0
+            && suppliers[i].type == s->type) {
             return i;
         }
     }
@@ -75,52 +96,230 @@ customer_get_1_svc(int *id, struct svc_req *rqstp)
 
 	return &result;
 }
+anyCustomers *
+customer_get_all_1_svc(void *argp, struct svc_req *rqstp)
+{
+    static anyCustomers result;
+    unsigned i;
+
+    for(i = 0; i < customers_count; i++) {
+        result.customers[i] = customers[i];
+    }
+    result.len = customers_count;
+
+    return &result;
+}
 
 offer *
 offer_get_1_svc(int *id, struct svc_req *rqstp)
 {
 	static offer  result;
+    unsigned i;
 
-    if (id != NULL && *id >= 0 && *id <= offers_count) {
-        result = offers[*id];
-    } else {
-        result.id = -1;
+    if (id != NULL && *id >= 0) {
+        for(i = 0; i < OFFER_MAX; i++) {
+            if (offers[i].id == *id) {
+                result = offers[i];
+                return &result;
+            }
+        }
     }
+    result.id = -1;
 
 	return &result;
 }
 
+<<<<<<< HEAD
 int *
 offer_create_1_svc(offer *of, struct svc_req *rqstp)
+||||||| merged common ancestors
+//TODO: Elle doit renoyer un int
+offer *
+offer_create_1_svc(offer *of, struct svc_req *rqstp)
+=======
+int *
+offer_create_1_svc(offer *o, struct svc_req *rqstp)
+>>>>>>> dev
 {
+<<<<<<< HEAD
 	static int  result = -1;
+||||||| merged common ancestors
+	static offer  result;
+=======
+	static int  result = -1;
+    unsigned i;
+>>>>>>> dev
 
-    if (of == NULL) return &result;
+    if (o == NULL || offer_find_index(o) != -1)
+        return &result;
 
-    if (of->id == -1) {
-        if (offers_count + 1 < OFFER_MAX && offer_find_index(of) == -1) {
-            of->id = offers_count;
-            offers[offers_count] = *of;
-            //result = offers_count++;
-            result = *of;
+    if (o->id < 0) {
+        for(i = 0; i < OFFER_MAX; i++) {
+            if (offers[i].id == -1) {
+                o->id = offers_count;
+                offers[i] = *o;
+                result = offers_count++;
+                break;
+            }
         }
-    } else if (of->id < customers_count) {
-        offers[of->id] = *of;
-        //result = of->id;
-        result = *of;
+    } else {
+        for(i = 0; i < OFFER_MAX; i++) {
+            if (offers[i].id == o->id) {
+                offers[i] = *o;
+                result = o->id;
+                break;
+            }
+        }
     }
 
 	return &result;
 }
 
 int *
-offre_delete_1_svc(offer *argp, struct svc_req *rqstp)
+offer_delete_1_svc(int *id, struct svc_req *rqstp)
 {
 	static int  result = -1;
+    unsigned i;
 
-	/*
-	 * insert server code here
-	 */
+    if (id == NULL || *id < 0)
+        return &result;
+
+    for(i = 0; i < OFFER_MAX; i++) {
+        if (offers[i].id == *id) {
+            offers[i].id = -1;
+	        result = *id;
+            break;
+        }
+    }
 
 	return &result;
+}
+
+anyOffers *
+offer_get_all_1_svc(void *argp, struct svc_req *rqstp)
+{
+    static anyOffers result;
+    unsigned i;
+
+    result.len = 0;
+    for(i = 0; i < OFFER_MAX; i++) {
+        if (offers[i].id != -1) {
+            result.offers[result.len++] = offers[i];
+        }
+    }
+
+    return &result;
+}
+
+void *
+init_1_svc(void *argp, struct svc_req *rqstp)
+{
+    static char result;
+    unsigned i;
+
+    for(i = 0; i < OFFER_MAX; i++) {
+        offers[i].id = -1;
+    }
+    for (i = 0; i < SUPPLIER_MAX; i++) {
+        suppliers[i].id = -1;
+    }
+
+    return (void *) &result;
+}
+
+int *
+supplier_create_1_svc(supplier *s, struct svc_req *rqstp)
+{
+    static int result = -1;
+    unsigned i;
+
+    if (s == NULL || supplier_find_index(s) != -1)
+        return &result;
+
+    if (s->id < 0) {
+        for (i = 0; i < SUPPLIER_MAX; i++) {
+            if (suppliers[i].id == -1) {
+                s->id = supplier_count;
+                suppliers[i] = *s;
+                result = supplier_count++;
+                break;
+            }
+        }
+    } else {
+        for (i = 0; i < SUPPLIER_MAX; i++) {
+            if (suppliers[i].id == s->id) {
+                suppliers[i] = *s;
+                result = s->id;
+                break;
+            }
+        }
+    }
+
+    return &result;
+}
+
+supplier *
+supplier_get_1_svc(int *id, struct svc_req *rqstp)
+{
+    static supplier result;
+    unsigned i;
+
+    if (id != NULL && *id >= 0) {
+        for (i = 0; i < SUPPLIER_MAX; i++) {
+            if (suppliers[i].id == *id) {
+                result = suppliers[i];
+                return &result;
+            }
+        }
+    }
+    result.id = -1;
+
+    return &result;
+}
+
+int *
+supplier_delete_1_svc(int *id, struct svc_req *rqstp)
+{
+    static int result = -1;
+    unsigned i;
+
+    if (id == NULL || *id < 0)
+        return &result;
+
+    for (i = 0; i < SUPPLIER_MAX; i++) {
+        if (suppliers[i].id  == *id) {
+            suppliers[i].id = -1;
+            result = *id;
+            break;
+        }
+    }
+
+    return &result;
+}
+
+anySuppliers *
+supplier_get_all_1_svc(supplierType *type, struct svc_req *rqstp)
+{
+    static anySuppliers result;
+    unsigned i;
+
+    result.len = 0;
+    if (type == NULL)
+        return &result;
+
+    if (*type == UNKNOWN_OFFER) {
+        for (i = 0; i < SUPPLIER_MAX; i++) {
+            if (suppliers[i].id != -1) {
+                result.suppliers[result.len++] = suppliers[i];
+            }
+        }
+    } else {
+        for (i = 0; i < SUPPLIER_MAX; i++) {
+            if (suppliers[i].id != -1 && suppliers[i].type == *type) {
+                result.suppliers[result.len++] = suppliers[i];
+            }
+        }
+    }
+
+    return &result;
 }
