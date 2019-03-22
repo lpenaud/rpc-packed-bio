@@ -129,26 +129,11 @@ offer_get_1_svc(int *id, struct svc_req *rqstp)
 	return &result;
 }
 
-<<<<<<< HEAD
-int *
-offer_create_1_svc(offer *of, struct svc_req *rqstp)
-||||||| merged common ancestors
-//TODO: Elle doit renoyer un int
-offer *
-offer_create_1_svc(offer *of, struct svc_req *rqstp)
-=======
 int *
 offer_create_1_svc(offer *o, struct svc_req *rqstp)
->>>>>>> dev
 {
-<<<<<<< HEAD
-	static int  result = -1;
-||||||| merged common ancestors
-	static offer  result;
-=======
 	static int  result = -1;
     unsigned i;
->>>>>>> dev
 
     if (o == NULL || offer_find_index(o) != -1)
         return &result;
@@ -181,8 +166,15 @@ offer_delete_1_svc(int *id, struct svc_req *rqstp)
 	static int  result = -1;
     unsigned i;
 
-    if (id == NULL || *id < 0)
+    if (id == NULL) {
+        printf("ERREUR %s:%d l'id est null\n", __FILE__, __LINE__);
         return &result;
+    }
+
+    if (*id < 0) {
+        printf("ERREUR %s:%d l'id est inférieur à 0\n", __FILE__, __LINE__);
+        return &result;
+    }
 
     for(i = 0; i < OFFER_MAX; i++) {
         if (offers[i].id == *id) {
@@ -233,8 +225,14 @@ supplier_create_1_svc(supplier *s, struct svc_req *rqstp)
     static int result = -1;
     unsigned i;
 
-    if (s == NULL || supplier_find_index(s) != -1)
+    if (s == NULL) {
+        printf("ERREUR %s:%d Le fournisseur est null\n", __FILE__, __LINE__);
+    }
+
+    if ((result = supplier_find_index(s)) != -1) {
+        printf("ERREUR %s:%d Le fournisseur existe déjà\n", __FILE__, __LINE__);
         return &result;
+    }
 
     if (s->id < 0) {
         for (i = 0; i < SUPPLIER_MAX; i++) {

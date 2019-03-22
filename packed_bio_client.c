@@ -131,23 +131,24 @@ int packed_bio_customers(CLIENT *clnt)
 	supplierType st;
 
     // New customers
+    printf("On crée le premier client\n");
     customer_init(&c);
     sprintf(c.name, "Nonnon");
     sprintf(c.surname, "Yaya");
     sprintf(c.birth_date, "23/03/98");
     sprintf(c.address, "Mimosa");
     res = customer_update_or_create_1(&c, clnt);
-    assert(*res != -1);
 
+    printf("On crée le deuxième client\n");
     customer_init(&c);
     sprintf(c.surname, "Etchebest");
     sprintf(c.name, "Philippe");
     sprintf(c.birth_date, "02/12/66");
     sprintf(c.address, "Aisne");
     res = customer_update_or_create_1(&c, clnt);
-    assert(*res != -1);
 
     // Update customer
+    printf("Mise-à-jour du deuxième client\n");
     customer_init(&c);
     c.id = *res;
     sprintf(c.surname, "Des champs");
@@ -157,6 +158,7 @@ int packed_bio_customers(CLIENT *clnt)
     res = customer_update_or_create_1(&c, clnt);
     assert(*res != -1);
 
+    printf("Affichage de tout les clients\n");
     cs = customer_get_all_1(NULL, clnt);
     for(i = 0; i < cs->len; i++) {
         customer_display(cs->customers + i);
@@ -195,6 +197,12 @@ int packed_bio_customers(CLIENT *clnt)
     printf("On supprime l'offre %d\n", i);
 	res = offer_delete_1(&i, clnt);
 
+    printf("On supprime l'offre %d\n", i);
+	res = offer_delete_1(&i, clnt);
+    if (*res == -1) {
+        printf("L'offre a déjà été supprimé\n");
+    }
+
     printf("Maintenant il doit avoir une offre en moins\n");
     os = offer_get_all_1(NULL, clnt);
     for(i = 0; i < os->len; i++) {
@@ -207,7 +215,12 @@ int packed_bio_customers(CLIENT *clnt)
 	sprintf(s.surname, "Pierre");
 	s.type = FRUITS_SUPPLIER;
 	res = supplier_create_1(&s, clnt);
-	s2 = supplier_get_1(res, clnt);
+    printf("res = %d\n", *res);
+    if (*res == -1) {
+        printf("Erreur lors de la création voir log serveur\n");
+    } else {
+    	s2 = supplier_get_1(res, clnt);
+    }
 	supplier_display(s2);
 
 	printf("Création d'un fournisseur de légume\n");
@@ -216,7 +229,11 @@ int packed_bio_customers(CLIENT *clnt)
 	sprintf(s.surname, "Jacques");
 	s.type = VEGETABLES_SUPPLIER;
 	res = supplier_create_1(&s, clnt);
-	s2 = supplier_get_1(res, clnt);
+    if (*res == -1) {
+        printf("erreur lors de la création voir le log serveur\n");
+    } else {
+    	s2 = supplier_get_1(res, clnt);
+    }
 	supplier_display(s2);
 
 	printf("Création d'un deuxième fournisseur de fruit\n");
@@ -225,6 +242,11 @@ int packed_bio_customers(CLIENT *clnt)
 	sprintf(s.surname, "Paul");
 	s.type = FRUITS_SUPPLIER;
 	res = supplier_create_1(&s, clnt);
+    if (*res == -1) {
+        printf("Erreur lors de la création voir le log serveur\n");
+    } else {
+    	s2 = supplier_get_1(res, clnt);
+    }
 	s2 = supplier_get_1(res, clnt);
 	supplier_display(s2);
 
@@ -236,6 +258,17 @@ int packed_bio_customers(CLIENT *clnt)
 	}
 
 	printf("On affiche tout les fournisseurs (3)\n");
+	st = UNKNOWN_OFFER;
+	ss = supplier_get_all_1(&st, clnt);
+	for (i = 0; i < ss->len; i++) {
+		supplier_display(ss->suppliers + i);
+	}
+
+    printf("On supprime le fournisseur n°1\n");
+    i = 1;
+    res = supplier_delete_1(&i, clnt);
+     
+	printf("On affiche tout les fournisseurs (2)\n");
 	st = UNKNOWN_OFFER;
 	ss = supplier_get_all_1(&st, clnt);
 	for (i = 0; i < ss->len; i++) {
